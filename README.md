@@ -1,3 +1,3 @@
-# pkgbuild-template
+# auto-tweaks-browser
 
-Package description
+Auto optimize brave, chromium, epiphany, falkon, firefox, google-chrome, opera and vivaldi

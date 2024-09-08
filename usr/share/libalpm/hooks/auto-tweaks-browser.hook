@@ -1,0 +1,20 @@
+[Trigger]
+Type = Package
+Operation = Install
+Operation = Upgrade
+
+Target = brave-browser-beta
+Target = brave-nightly-bin
+Target = chromium
+Target = chromium-snapshot-bin
+Target = firefox
+Target = google-chrome
+Target = google-chrome-beta
+Target = google-chrome-dev
+Target = vivaldi
+Target = auto-tweaks-browser
+
+[Action]
+Description = Automatic enable nosync-browser
+When = PostTransaction
+Exec = /usr/local/bin/auto-tweaks-browser-apply
