@@ -38,13 +38,17 @@ configurar_perfil_brave() {
 	# Usuário que iniciou o comando sudo
 	usuario_instalador="${SUDO_USER:-$(whoami)}"
 	USER_HOME="/home/$usuario_instalador"
-	home_work="$USER_HOME"/.config/BraveSoftware/Brave-Browser/Default
+	home_work="$USER_HOME"/.config/BraveSoftware
 
 	[[ ! -d "$home_work" ]] && mkdir -p "$home_work"
-	cp -Rpan /usr/share/biglinux/browser/BraveSoftware/Brave-Browser/Default/* \
-		"$home_work"/
+  if [[ -e "/usr/lib/libEGL_amber.so" ]]; then
+    cp -R /usr/share/biglinux/browser/BraveSoftwareAmber "$home_work"
+  else
+    cp -R /usr/share/biglinux/browser/BraveSoftware "$home_work"
+  fi
+
 	# Ajusta a propriedade dos arquivos copiados para o usuário original
-	chown -R "$usuario_instalador":"$usuario_instalador" "$USER_HOME/.config/BraveSoftware"
+	chown -R "$usuario_instalador":"$usuario_instalador" "$home_work"
 }
 
 otimizar_atalhos_navegadores() {
