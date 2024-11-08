@@ -1,21 +1,77 @@
 #!/usr/bin/env bash
-#Tweaks to improve speed of browser
+# -*- coding: utf-8 -*-
+# shellcheck shell=bash disable=SC1091,SC2039,SC2166
+#
+#  /usr/local/bin/auto-tweaks-browser-apply
+#  Tweaks to improve speed of browser
+#  Created: 2024/11/07 - 22:45
+#  Altered: 2024/11/07 - 22:45
+#
+#  Copyright (c) 2024-2024, Vilmar Catafesta <vcatafesta@gmail.com>
+#  All rights reserved.
+#
+#  Redistribution and use in source and binary forms, with or without
+#  modification, are permitted provided that the following conditions
+#  are met:
+#  1. Redistributions of source code must retain the above copyright
+#     notice, this list of conditions and the following disclaimer.
+#  2. Redistributions in binary form must reproduce the above copyright
+#     notice, this list of conditions and the following disclaimer in the
+#     documentation and/or other materials provided with the distribution.
+#
+#  THIS SOFTWARE IS PROVIDED BY THE AUTHOR AS IS'' AND ANY EXPRESS OR
+#  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+#  OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+#  IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+#  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+#  NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+#  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+#  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+#  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+#  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+##############################################################################
 
-folder=/usr/share/applications
+configurar_perfil_brave() {
+	# Essencialmente, o código configura o Brave para o usuário original que iniciou o comando sudo,
+	# copiando as configurações padrão de homepage e ajustando as permissões dos arquivos.
 
-test -f $folder/chromium.desktop && sed -i 's|/usr/bin/||g' $folder/chromium.desktop || exit=0
-test -f $folder/firefox.desktop && sed -i 's|/usr/lib/firefox/||g' $folder/firefox.desktop || exit=0
-test -f $folder/vivaldi-stable.desktop && sed -i 's|/usr/bin/||g' $folder/vivaldi-stable.desktop || exit=0
-test -f $folder/google-chrome.desktop && sed -i 's|/usr/bin/||g' $folder/google-chrome.desktop || exit=0
-test -f $folder/google-chrome-beta.desktop && sed -i 's|/usr/bin/||g' $folder/google-chrome-beta.desktop || exit=0
-test -f $folder/google-chrome-unstable.desktop && sed -i 's|/usr/bin/||g' $folder/google-chrome-unstable.desktop || exit=0
-test -f $folder/brave-browser-beta.desktop && sed -i 's|/usr/bin/||g' $folder/brave-browser-beta.desktop || exit=0
-test -f $folder/brave-browser-nightly.desktop && sed -i 's|/usr/bin/||g' $folder/brave-browser-nightly.desktop || exit=0
+	# Usuário que iniciou o comando sudo
+	usuario_instalador="${SUDO_USER:-$(whoami)}"
+	USER_HOME="/home/$usuario_instalador"
+	home_work="$USER_HOME"/.config/BraveSoftware/Brave-Browser/Default
 
-# Usuário que iniciou o comando sudo
-usuario_instalador="${SUDO_USER:-$(whoami)}"
-USER_HOME="/home/$usuario_instalador"
-cp -Rpan /usr/share/biglinux/browser/BraveSoftware/Brave-Browser/Default/* \
-          "$USER_HOME"/.config/BraveSoftware/Brave-Browser/Default/
-# Ajusta a propriedade dos arquivos copiados para o usuário original
-chown -R "$usuario_instalador":"$usuario_instalador" "$USER_HOME/.config/BraveSoftware/Brave-Browser/Default"
+	[[ ! -d "$home_work" ]] && mkdir -p "$home_work"
+	cp -Rpan /usr/share/biglinux/browser/BraveSoftware/Brave-Browser/Default/* \
+		"$home_work"/
+	# Ajusta a propriedade dos arquivos copiados para o usuário original
+	chown -R "$usuario_instalador":"$usuario_instalador" "$USER_HOME/.config/BraveSoftware"
+}
+
+otimizar_atalhos_navegadores() {
+	# Tweaks to improve speed of browser
+	# Pasta que contém os arquivos .desktop
+	folder="/usr/share/applications"
+
+	# Lista de arquivos desktop dos navegadores e os caminhos a serem removidos
+	declare -A browsers=(
+		["chromium.desktop"]="/usr/bin/"
+		["firefox.desktop"]="/usr/lib/firefox/"
+		["vivaldi-stable.desktop"]="/usr/bin/"
+		["google-chrome.desktop"]="/usr/bin/"
+		["google-chrome-beta.desktop"]="/usr/bin/"
+		["google-chrome-unstable.desktop"]="/usr/bin/"
+		["brave-browser-beta.desktop"]="/usr/bin/"
+		["brave-browser-nightly.desktop"]="/usr/bin/"
+	)
+
+	# Loop por cada arquivo desktop e aplica o comando sed se o arquivo existir
+	for desktop_file in "${!browsers[@]}"; do
+		if [ -f "$folder/$desktop_file" ]; then
+			# Remove o caminho especificado no array do comando de execução
+			sed -i "s|${browsers[$desktop_file]}||g" "$folder/$desktop_file"
+		fi
+	done
+}
+
+configurar_perfil_brave
+otimizar_atalhos_navegadores
