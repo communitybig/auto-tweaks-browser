@@ -41,9 +41,6 @@ configurar_perfil_brave() {
 	home_work="$USER_HOME"/.config/BraveSoftware
 
 	[[ ! -d "$home_work" ]] && mkdir -p "$home_work"
-  if [[ -e "/usr/lib/libEGL_amber.so" ]]; then
-    cp -R /usr/share/biglinux/browser/BraveSoftwareAmber "$home_work"
-  else
     cp -R /usr/share/biglinux/browser/BraveSoftware "$home_work"
   fi
 
